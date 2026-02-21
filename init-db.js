@@ -89,19 +89,6 @@ async function initializeDatabase() {
                 INDEX idx_confirmed (is_confirmed)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
-        console.log('✅ Таблица tasks создана');
-        
-        console.log('\n╔═══════════════════════════════════════╗');
-        console.log('║   ✅ База данных успешно создана!    ║');
-        console.log('╠═══════════════════════════════════════╣');
-        console.log(`║  База: ${dbName.padEnd(30)}║`);
-        console.log('║  Таблицы:                            ║');
-        console.log('║    - users                           ║');
-        console.log('║    - family_members                  ║');
-        console.log('║    - tasks                           ║');
-        console.log('╚═══════════════════════════════════════╝\n');
-        
-        console.log('Теперь можете запустить сервер: npm start');
         
     } catch (error) {
         console.error('❌ Ошибка инициализации базы данных:', error.message);
@@ -115,3 +102,4 @@ async function initializeDatabase() {
 
 
 initializeDatabase();
+
