@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FamilyHub - Семейный органайзер</title>
+    <script>
+        if (localStorage.getItem('lightTheme') === 'true') {
+            document.documentElement.classList.add('light-theme-early');
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css?v=5">
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('lightTheme') === 'true') {
+            document.body.classList.add('light-theme');
+        }
+    </script>
+
+    <div class="auth-overlay" id="authOverlay">
+        <canvas id="particleCanvas" class="particle-canvas"></canvas>
+        <div class="auth-modal" id="authModal">
+            <div class="auth-form" id="loginForm">
+                <div class="auth-header">
+                    <div class="auth-logo">
+                        <img src="assets/logo.png" alt="FamilyHub Logo" class="logo-image">
+                        <h2>FamilyHub</h2>
+                    </div>
+                    <p class="auth-subtitle">Добро пожаловать!</p>
+                </div>
+                <div class="auth-body">
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" placeholder="example@mail.com" class="auth-input">
+                    </div>
+                    <div class="input-group">
+                        <label>Пароль</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" class="auth-input">
+                    </div>
+                    <button class="btn-auth-primary" onclick="handleLogin()">Войти</button>
+                    <p class="auth-switch">
+                        Нет аккаунта? <a href="#" onclick="showRegisterForm()">Зарегистрироваться</a>
+                    </p>
+                </div>
+            </div>
+            <div class="auth-form" id="registerForm" style="display: none;">
+                <div class="auth-header">
+                    <div class="auth-logo">
+                        <img src="assets/logo.png" alt="FamilyHub Logo" class="logo-image">
+                        <h2>FamilyHub</h2>
+                    </div>
+                    <p class="auth-subtitle">Создайте аккаунт</p>
+                </div>
+                <div class="auth-body">
+                    <div class="input-group">
+                        <label>Я</label>
+                        <select id="registerRole" class="auth-input" onchange="handleRoleChange()">
+                            <option value="parent">Родитель</option>
+                            <option value="child">Ребёнок</option>
+                        </select>
+                    </div>
+                    <div id="parentFields">
+                        <div class="input-group">
+                            <label>Название семьи</label>
+                            <input type="text" id="registerFamilyName" placeholder="Семья Ивановых" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Ваше имя</label>
+                            <input type="text" id="registerName" placeholder="Ваше имя" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Email</label>
+                            <input type="email" id="registerEmail" placeholder="example@mail.com" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Пароль</label>
+                            <input type="password" id="registerPassword" placeholder="••••••••" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Подтвердите пароль</label>
+                            <input type="password" id="registerPasswordConfirm" placeholder="••••••••" class="auth-input">
+                        </div>
+                    </div>
+                    
+                    <div id="childFields" style="display: none;">
+                        <div class="input-group">
+                            <label>Ваше имя</label>
+                            <input type="text" id="registerChildName" placeholder="Ваше имя" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Email родителя</label>
+                            <input type="email" id="registerParentEmail" placeholder="email@родителя.com" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Ваш Email</label>
+                            <input type="email" id="registerChildEmail" placeholder="example@mail.com" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Пароль</label>
+                            <input type="password" id="registerChildPassword" placeholder="••••••••" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Подтвердите пароль</label>
+                            <input type="password" id="registerChildPasswordConfirm" placeholder="••••••••" class="auth-input">
+                        </div>
+                    </div>
+                    
+                    <button class="btn-auth-primary" onclick="handleRegister()">Зарегистрироваться</button>
+                    <p class="auth-switch">
+                        Уже есть аккаунт? <a href="#" onclick="showLoginForm()">Войти</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainApp" style="display: none;">
+
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="assets/logo.png" alt="FamilyHub Logo" class="logo-image">
+                <div class="logo-text">
+                    <h1>FamilyHub</h1>
+                    <p id="familyNameDisplay">Семья Ивановых</p>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <a href="#" class="nav-item active">
+                    <span>Дашборд</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>Задачи</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>Календарь</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>Статистика</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>Семья</span>
+                </a>
+                <a href="#" class="nav-item nav-reports" style="display: none;">
+                    <span>Отчёты</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>Настройки</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button class="btn-logout" onclick="handleLogout()">
+                    <span>Выйти</span>
+                </button>
+            </div>
+        </aside>
+
+
+        <main class="main-content" id="mainContent">
+            <div id="dashboardContent">
+
+            <header class="header">
+                <h2>Добро пожаловать!</h2>
+                <p class="subtitle" id="dashboardSubtitle">Сегодня у вас 0 активных задач</p>
+                <div class="header-actions">
+                    <button class="btn-primary">+ Новая задача</button>
+                </div>
+            </header>
+            <section class="family-activity">
+                <div class="section-header">
+                    <h3>Активность семьи</h3>
+                    <a href="#" class="link">Посмотреть всех</a>
+                </div>
+                <div class="family-members" id="dashboardFamilyMembers">
+                </div>
+            </section>
+
+            <div class="row">
+                <section class="goals-section">
+                    <div class="section-header">
+                        <h3>Недельные цели</h3>
+                        <span class="date-range" id="weekRange">Неделя 10 – 16 февраля</span>
+                    </div>
+                    <div class="goals-list">
+                        <div class="goal-item">
+                            <div class="goal-header">
+                                <span class="goal-name">Выполнить задачи</span>
+                                <span class="goal-progress">0/50</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill purple" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="goal-item">
+                            <div class="goal-header">
+                                <span class="goal-name">Семейные очки</span>
+                                <span class="goal-progress pink">0/1000</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill pink" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="goal-item">
+                            <div class="goal-header">
+                                <span class="goal-name">Активных дней подряд</span>
+                                <span class="goal-progress cyan">0/7</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill cyan" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="notifications-section">
+                    <h3>Уведомления</h3>
+                    <div class="notifications-list" id="notificationsList">
+                    </div>
+                </section>
+            </div>
+
+            <section class="tasks-section">
+                <div class="section-header">
+                    <h3>Задачи по категориям</h3>
+                    <div class="tabs">
+                        <button class="tab active">Все</button>
+                        <button class="tab">Сегодня</button>
+                        <button class="tab">На неделе</button>
+                    </div>
+                </div>
+
+                <div class="categories-grid">
+
+                    <div class="category-card" data-category="cleaning">
+                        <div class="category-header">
+                            <span class="category-icon purple">❖</span>
+                            <div>
+                                <h4>Уборка</h4>
+                                <p class="task-count">0 задач</p>
+                            </div>
+                        </div>
+                        <div class="tasks-list">
+                        </div>
+                    </div>
+
+                    <div class="category-card" data-category="cooking">
+                        <div class="category-header">
+                            <span class="category-icon orange">✦</span>
+                            <div>
+                                <h4>Готовка</h4>
+                                <p class="task-count">0 задач</p>
+                            </div>
+                        </div>
+                        <div class="tasks-list">
+                        </div>
+                    </div>
+
+                    <div class="category-card" data-category="shopping">
+                        <div class="category-header">
+                            <span class="category-icon green">◆</span>
+                            <div>
+                                <h4>Покупки</h4>
+                                <p class="task-count">0 задач</p>
+                            </div>
+                        </div>
+                        <div class="tasks-list">
+                        </div>
+                    </div>
+
+
+                    <div class="category-card" data-category="kids">
+                        <div class="category-header">
+                            <span class="category-icon pink">★</span>
+                            <div>
+                                <h4>Дети</h4>
+                                <p class="task-count">0 задач</p>
+                            </div>
+                        </div>
+                        <div class="tasks-list">
+
+                        </div>
+                    </div>
+
+
+                    <div class="category-card" data-category="pets">
+                        <div class="category-header">
+                            <span class="category-icon yellow">●</span>
+                            <div>
+                                <h4>Питомцы</h4>
+                                <p class="task-count">0 задач</p>
+                            </div>
+                        </div>
+                        <div class="tasks-list">
+
+                        </div>
+                    </div>
+
+
+                    <div class="category-card" data-category="finance">
+                        <div class="category-header">
+                            <span class="category-icon blue">$</span>
+                            <div>
+                                <h4>Финансы</h4>
+                                <p class="task-count">0 задач</p>
+                            </div>
+                        </div>
+                        <div class="tasks-list">
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/particles.js?v=3"></script>
+    
+
+    <script src="js/auth.js?v=3"></script>
+    <script src="js/tasks.js?v=3"></script>
+    <script src="js/family.js?v=3"></script>
+    <script src="js/reports.js?v=3"></script>
+    <script src="js/statistics.js?v=3"></script>
+    <script src="js/ui.js?v=3"></script>
+    <script src="js/main.js?v=3"></script>
+</body>
+</html>
